@@ -44,6 +44,9 @@ public struct SwipeOptions {
     
     /// The amount of space, in points, between the button image and the button title.
     public var buttonSpacing: CGFloat?
+
+    /// The amount of space, in points, between cell and action
+    public var actionInsets: UIEdgeInsets?
     
     /// Constructs a new `SwipeOptions` instance with default options.
     public init() {}

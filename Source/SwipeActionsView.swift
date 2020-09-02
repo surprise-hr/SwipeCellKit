@@ -109,7 +109,7 @@ class SwipeActionsView: UIView {
         
         super.init(frame: .zero)
         
-        clipsToBounds = true
+        clipsToBounds = false
         translatesAutoresizingMaskIntoConstraints = false
         
 
@@ -147,9 +147,10 @@ class SwipeActionsView: UIView {
             actionButton.contentEdgeInsets = buttonEdgeInsets(fromOptions: options)
             return actionButton
         })
-        
+
+        let insetsWidth = (options.actionInsets?.left ?? 0.0) + (options.actionInsets?.right ?? 0.0)
         let maximum = options.maximumButtonWidth ?? (size.width - 30) / CGFloat(actions.count)
-        let minimum = options.minimumButtonWidth ?? min(maximum, 74)
+        let minimum = (options.minimumButtonWidth ?? min(maximum, 74)) + insetsWidth
         minimumButtonWidth = buttons.reduce(minimum, { initial, next in max(initial, next.preferredWidth(maximum: maximum)) })
         
         
@@ -169,8 +170,12 @@ class SwipeActionsView: UIView {
             } else {
                 addSubview(wrapperView)
             }
-            
-            button.frame = wrapperView.contentRect
+
+            let wraperRect = wrapperView.contentRect
+            button.frame = CGRect(x: wraperRect.origin.x + (options.actionInsets?.left ?? 0.0),
+                                  y: wraperRect.origin.y,
+                                  width: wraperRect.size.width - (options.actionInsets?.left ?? 0.0) - (options.actionInsets?.right ?? 0.0),
+                                  height: wraperRect.size.height)
             button.maximumImageHeight = maximumImageHeight
             button.verticalAlignment = options.buttonVerticalAlignment
             button.shouldHighlight = action.hasBackgroundColor
@@ -178,11 +183,11 @@ class SwipeActionsView: UIView {
             wrapperView.leftAnchor.constraint(equalTo: leftAnchor).isActive = true
             wrapperView.rightAnchor.constraint(equalTo: rightAnchor).isActive = true
             
-            let topConstraint = wrapperView.topAnchor.constraint(equalTo: topAnchor, constant: contentEdgeInsets.top)
+            let topConstraint = wrapperView.topAnchor.constraint(equalTo: topAnchor, constant: contentEdgeInsets.top + (options.actionInsets?.top ?? 0.0))
             topConstraint.priority = contentEdgeInsets.top == 0 ? .required : .defaultHigh
             topConstraint.isActive = true
-            
-            let bottomConstraint = wrapperView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * contentEdgeInsets.bottom)
+
+            let bottomConstraint = wrapperView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -1 * (contentEdgeInsets.bottom + (options.actionInsets?.bottom ?? 0.0)))
             bottomConstraint.priority = contentEdgeInsets.bottom == 0 ? .required : .defaultHigh
             bottomConstraint.isActive = true
             
